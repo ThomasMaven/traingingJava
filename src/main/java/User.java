@@ -1,3 +1,8 @@
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -73,6 +78,29 @@ public class User {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return userId;
+    }
+
+    public int saveUser2() {
+        String sql = "INSERT INTO osoba (imie, nazwisko) VALUES (?,?) RETURNING id";
+        Database db = new Database();
+        JdbcTemplate template = new JdbcTemplate(db.getDBConnection2());
+        //not able to get id this way
+        //String[] customerObject = { getUserFirstname(),getUserLastname()};
+        //        template.update(sql, customerObject);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(
+                new PreparedStatementCreator() {
+                    public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                        PreparedStatement ps =
+                                connection.prepareStatement(sql, new String[] {"id"});
+                        ps.setString(1, getUserFirstname());
+                        ps.setString(2, getUserLastname());
+                        return ps;
+                    }
+                },
+                keyHolder);
+        userId = keyHolder.getKey().intValue();
         return userId;
     }
     private PreparedStatement createPreparedStatementSave(Connection con) throws SQLException {

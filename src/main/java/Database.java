@@ -1,8 +1,18 @@
 import java.sql.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ttomaka on 15.03.2017.
  */
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+
+import javax.sql.DataSource;
+
+@Configuration
 public class Database {
 
     public static final String dbHost = "127.0.0.1";
@@ -27,7 +37,23 @@ public class Database {
         }
         return isConnectionOk;
     }
+    public boolean testDBConnection2() {
+        boolean isConnectionOk = false;
+        JdbcTemplate template = new JdbcTemplate(getDBConnection2());
+        String sql = "Select 1";
+        List<Map<String, Object>> list = template.queryForList(sql);
+        return !list.isEmpty();
+    }
 
+    @Bean
+    public DataSource getDBConnection2() {
+        SingleConnectionDataSource dataSource = new SingleConnectionDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://"+dbHost+":"+dbPort+"/"+dbName);
+        dataSource.setUsername(dbUser);
+        dataSource.setPassword(dbPassword);
+        return dataSource;
+    }
 
     public Connection getDBConnection() {
 
@@ -47,7 +73,6 @@ public class Database {
         }
         return null;
     }
-
 
 
 
