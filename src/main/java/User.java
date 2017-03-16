@@ -2,14 +2,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by ttomaka on 15.03.2017.
@@ -60,6 +59,7 @@ public class User {
         return null;
     }
 
+
     private PreparedStatement createPreparedStatementGetUserContacts(Connection con, int userId) throws SQLException {
         String sql = "SELECT t.wartosc as typ, k.wartosc as wartosc from kontakt k " +
                 "JOIN kontakt_list kl on k.id=kl.id_kontaktu  " +
@@ -67,6 +67,25 @@ public class User {
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setInt(1, userId);
         return ps;
+    }
+
+    public static String displayUserContacts( int userId ) {
+        String sql = "SELECT t.wartosc as typ, k.wartosc as wartosc from kontakt k " +
+                "JOIN kontakt_list kl on k.id=kl.id_kontaktu  " +
+                "JOIN osoba os on os.id=kl.id_os JOIN typ t on t.id=k.typ_id WHERE os.id=?";
+        Database db = new Database();
+        JdbcTemplate template = new JdbcTemplate(db.getDBConnection2());
+        List<Map<String,Object>> rows = template.queryForList(sql, userId);
+
+        //template.query()
+        String userContacts = new String();
+        for (Map<String,Object> row : rows) {
+            userContacts += String.valueOf(row.get("typ")) + ": ";
+            userContacts += String.valueOf(row.get("wartosc")) + "\n";
+
+        }
+
+        return userContacts;
     }
 
     public int saveUser() {
