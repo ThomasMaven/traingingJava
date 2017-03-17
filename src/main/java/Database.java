@@ -15,11 +15,11 @@ import javax.sql.DataSource;
 @Configuration
 public class Database {
 
-    public static final String dbHost = "127.0.0.1";
-    public static final String dbPort = "5432";
-    public static final String dbName = "zadanie1";
-    public static final String dbUser = "postgres";
-    public static final String dbPassword = "pgspgs";
+    private static final String dbHost = "127.0.0.1";
+    private static final String dbPort = "5432";
+    private static final String dbName = "zadanie1";
+    private static final String dbUser = "postgres";
+    private static final String dbPassword = "pgspgs";
 
 
 
@@ -29,7 +29,7 @@ public class Database {
         boolean isConnectionOk = false;
         try (Connection connection = getDBConnection();
              Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT 1");) {
+             ResultSet resultSet = statement.executeQuery("SELECT 1")) {
 
             if (resultSet.next()) isConnectionOk = true;
         } catch (SQLException e) {
@@ -64,10 +64,9 @@ public class Database {
         }
 
         try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://"+dbHost+":"+dbPort+"/"+dbName,dbUser, dbPassword);
 
-            return connection;
+            return DriverManager.getConnection(
+                    "jdbc:postgresql://"+dbHost+":"+dbPort+"/"+dbName,dbUser, dbPassword);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,4 @@
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -15,14 +14,14 @@ import java.util.*;
  */
 public class User {
 
-    String userFirstname;
-    String userLastname;
+    private String userFirstname;
+    private String userLastname;
 
-    public void setUserId(int userId) {
+    private void setUserId(int userId) {
         this.userId = userId;
     }
 
-    int userId;
+    private int userId;
 
     public String getUserFirstname() {
         return userFirstname;
@@ -46,7 +45,7 @@ public class User {
              PreparedStatement ps = createPreparedStatementGetUserContacts(connection, userId);
              ResultSet resultSet = ps.executeQuery()) {
 
-            String userContacts = new String();
+            String userContacts = "";
             while ( resultSet.next() ) {
                 userContacts += resultSet.getString("typ") + ": ";
                 userContacts += resultSet.getString("wartosc") + "\n";
@@ -75,8 +74,26 @@ public class User {
                 "JOIN osoba os on os.id=kl.id_os JOIN typ t on t.id=k.typ_id WHERE os.id=?";
         Database db = new Database();
         JdbcTemplate template = new JdbcTemplate(db.getDBConnection2());
-        String userContacts = new String();
-        List<UserKontakt> userKontakts = template.query(sql, new KontaktMapper(), userId);
+        String userContacts = "";
+
+        //OLD way:
+//        RowMapper kontaktMapper = new RowMapper() {
+//            public UserKontakt mapRow(ResultSet rs, int rowNum) throws SQLException {
+//                UserKontakt kontakt = new UserKontakt();
+//                kontakt.setType(rs.getString("typ"));
+//                kontakt.setValue(rs.getString("wartosc"));
+//                return kontakt;
+//            }
+//        };
+
+        //Using labda
+        RowMapper kontaktMapper = (rs, rowNum) -> {
+            UserKontakt kontakt = new UserKontakt();
+            kontakt.setType(rs.getString("typ"));
+            kontakt.setValue(rs.getString("wartosc"));
+            return kontakt;
+        };
+        List<UserKontakt> userKontakts = template.query(sql, kontaktMapper, userId);
         for (UserKontakt kontakt : userKontakts) {
             userContacts += kontakt.getType() + ": ";
             userContacts += kontakt.getValue() + "\n";
@@ -107,14 +124,12 @@ public class User {
         //        template.update(sql, customerObject);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(
-                new PreparedStatementCreator() {
-                    public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                        PreparedStatement ps =
-                                connection.prepareStatement(sql, new String[] {"id"});
-                        ps.setString(1, getUserFirstname());
-                        ps.setString(2, getUserLastname());
-                        return ps;
-                    }
+                connection -> {
+                    PreparedStatement ps =
+                            connection.prepareStatement(sql, new String[] {"id"});
+                    ps.setString(1, getUserFirstname());
+                    ps.setString(2, getUserLastname());
+                    return ps;
                 },
                 keyHolder);
         userId = keyHolder.getKey().intValue();
@@ -130,7 +145,7 @@ public class User {
 
     public List<User> findUsersByNameAndSurname(String userFirstname, String userLastname) {
 
-        List<User> userList = new ArrayList<User>();
+        List<User> userList = new ArrayList<>();
         try (Connection connection = new Database().getDBConnection();
              PreparedStatement ps = createPreparedStatementFindUsersByNameAndSurname(connection, userFirstname, userLastname);
              ResultSet resultSet = ps.executeQuery()) {
@@ -158,7 +173,7 @@ public class User {
     }
 
     public void transactionExample() {
-        try (Connection connection = new Database().getDBConnection();) {
+        try (Connection connection = new Database().getDBConnection()) {
             connection.setAutoCommit(false);
             for (int i=0; i<5; i++) {
                 PreparedStatement ps = createPreparedTransactionExample(connection);
@@ -178,13 +193,6 @@ public class User {
         return ps;
     }
 
-    public static class KontaktMapper implements RowMapper<UserKontakt> {
-        public UserKontakt mapRow(ResultSet rs, int rowNum) throws SQLException {
-            UserKontakt kontakt = new UserKontakt();
-            kontakt.setType(rs.getString("typ"));
-            kontakt.setValue(rs.getString("wartosc"));
-            return kontakt;
-        }
-    }
+
 
 }
