@@ -1,3 +1,9 @@
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,6 +50,31 @@ public class Kontakt {
         }
         return kontaktId;
     }
+    public int saveContact2(int userId) {
+        String sql = "INSERT INTO kontakt (typ_id, wartosc) VALUES (?,?) RETURNING id";
+        Database db = new Database();
+        JdbcTemplate template = new JdbcTemplate(db.getDBConnection2());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(
+                new PreparedStatementCreator() {
+                    public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                        PreparedStatement ps =
+                                connection.prepareStatement(sql, new String[] {"id"});
+                        ps.setInt(1, getTypeId());
+                        ps.setString(2, getValue());
+                        return ps;
+                    }
+                },
+                keyHolder);
+        kontaktId = keyHolder.getKey().intValue();
+        if ( kontaktId > 0 ) {
+            String sql2 = "INSERT INTO kontakt_list (id_os, id_kontaktu) VALUES (?,?)";
+            int[] paramObject = { userId, kontaktId};
+            template.update(sql2, paramObject);
+
+        }
+        return kontaktId;
+    }
 
     private PreparedStatement createPreparedSaveContact(Connection con) throws SQLException {
         String sql = "INSERT INTO kontakt (typ_id, wartosc) VALUES (?,?) RETURNING id";
@@ -75,4 +106,6 @@ public class Kontakt {
         ps.setInt(2, kontaktId);
         return ps;
     }
+
+
 }

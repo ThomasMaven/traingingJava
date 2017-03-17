@@ -53,4 +53,26 @@ public class JUnitTest extends TestCase {
 
     }
 
+
+    //JdbcTemplate
+    public void testUserSave2() {
+        User user = new User();
+        user.setUserFirstname("Jan");
+        user.setUserLastname("Nowak");
+        int recordId = user.saveUser2();
+        assertTrue(recordId>0);
+    }
+
+    public void testDBConnection2() {
+        Database db = new Database();
+        boolean isConnectionOk = db.testDBConnection2();
+        assertTrue(isConnectionOk);
+    }
+    public void testSaveKontakt2() {
+        Kontakt kontakt = new Kontakt();
+        kontakt.setTypeId(1);
+        kontakt.setValue("321321321");
+        int recordId = kontakt.saveContact(1);
+        assertTrue(recordId>0);
+    }
 }
