@@ -1,8 +1,8 @@
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -75,15 +75,13 @@ public class User {
                 "JOIN osoba os on os.id=kl.id_os JOIN typ t on t.id=k.typ_id WHERE os.id=?";
         Database db = new Database();
         JdbcTemplate template = new JdbcTemplate(db.getDBConnection2());
-        List<Map<String,Object>> rows = template.queryForList(sql, userId);
-
-        //template.query()
         String userContacts = new String();
-        for (Map<String,Object> row : rows) {
-            userContacts += String.valueOf(row.get("typ")) + ": ";
-            userContacts += String.valueOf(row.get("wartosc")) + "\n";
-
+        List<UserKontakt> userKontakts = template.query(sql, new KontaktMapper(), userId);
+        for (UserKontakt kontakt : userKontakts) {
+            userContacts += kontakt.getType() + ": ";
+            userContacts += kontakt.getValue() + "\n";
         }
+
 
         return userContacts;
     }
@@ -178,6 +176,15 @@ public class User {
         ps.setString(1, UUID.randomUUID().toString());
         ps.setString(2, UUID.randomUUID().toString());
         return ps;
+    }
+
+    public static class KontaktMapper implements RowMapper<UserKontakt> {
+        public UserKontakt mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UserKontakt kontakt = new UserKontakt();
+            kontakt.setType(rs.getString("typ"));
+            kontakt.setValue(rs.getString("wartosc"));
+            return kontakt;
+        }
     }
 
 }

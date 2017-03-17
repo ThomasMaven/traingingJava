@@ -6,8 +6,9 @@ import java.util.Scanner;
 public class App {
 
     public static void main(String[] args) {
-        //int userid = addNewOsoba();
-        System.out.println(User.displayUserContacts(1));
+        int userId = addNewOsoba();
+        addNewKontakt(userId);
+        System.out.println(User.displayUserContacts(userId));
     }
 
     private static int addNewOsoba(){
@@ -20,25 +21,38 @@ public class App {
 
         User user = new User();
         user.setUserFirstname(userFirstname);
-        user.setUserLastname(userFirstname);
+        user.setUserLastname(userLastname);
         int recordId = user.saveUser2();
 
+        System.out.println("\n\nUser contacts:\n");
         System.out.println("User added with ID: " + recordId);
         return recordId;
     }
     private static void addNewKontakt(int userId){
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter contact typeId (1=Telefon, 2=Email)");
-        int typeId = scanner.nextInt();
-        System.out.println("Enter contact value");
-        String contactValue = scanner.nextLine();
+        int typeId = 0;
+        while( typeId != -1 ) {
+            System.out.println("Enter contact typeId (1=Telefon, 2=Email) or -1 to quit");
+            try {
+                typeId = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                System.out.println("Not a number");
+                return;
+            }
+            if ( typeId !=-1 ) {
+                System.out.println("Enter contact value");
+                String contactValue = scanner.nextLine();
 
-        Kontakt kontakt = new Kontakt();
-        kontakt.setTypeId(typeId);
-        kontakt.setValue(contactValue);
+                Kontakt kontakt = new Kontakt();
+                kontakt.setTypeId(typeId);
+                kontakt.setValue(contactValue);
+                kontakt.saveContact(userId);
 
-        System.out.println("Contact added" );
+                System.out.println("Contact added");
+            }
+        }
     }
 
 }
