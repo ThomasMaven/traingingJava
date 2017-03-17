@@ -38,7 +38,6 @@ public class Database {
         return isConnectionOk;
     }
     public boolean testDBConnection2() {
-        boolean isConnectionOk = false;
         JdbcTemplate template = new JdbcTemplate(getDBConnection2());
         String sql = "Select 1";
         List<Map<String, Object>> list = template.queryForList(sql);
