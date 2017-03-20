@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.persistence.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,10 +14,34 @@ import java.sql.SQLException;
 /**
  * Created by ttomaka on 15.03.2017.
  */
+
+@Entity
+@Table(name="kontakt")
 public class Kontakt {
-    int typeId;
-    String value;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     int kontaktId;
+    @Column(name="wartosc")
+    String value;
+    @Column(name="typ_id")
+    int typeId;
+
+
+    public int getKontaktId() {
+        return kontaktId;
+    }
+
+    public void setKontaktId(int kontaktId) {
+        this.kontaktId = kontaktId;
+    }
+
+    public Kontakt() {}
+
+    public Kontakt(int typeId, String value) {
+        this.typeId = typeId;
+        this.value = value;
+    }
 
     public int getTypeId() {
         return typeId;

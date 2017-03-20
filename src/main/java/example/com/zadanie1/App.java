@@ -2,9 +2,12 @@ package example.com.zadanie1;
 
 import example.com.zadanie1.bean.Kontakt;
 import example.com.zadanie1.bean.User;
+import example.com.zadanie1.dao.KontaktDao;
+import example.com.zadanie1.dao.UserDao;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -18,7 +21,29 @@ public class App {
 //        addNewKontakt(userId);
 //        System.out.println(User.displayUserContacts(userId));
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring-configuration.xml");
+
+        try {
+            ApplicationContext context = new ClassPathXmlApplicationContext("spring-configuration.xml");
+            UserDao userDao = context.getBean("UserDaoImpl", UserDao.class);
+            User user = new User("Gal", "Anonim");
+
+            //Save user to DB
+            userDao.save(user);
+            System.out.println("User saved with ID= " + user.getUserId());
+
+            //find user
+            User foundUser = userDao.findByPrimaryKey(101);
+            System.out.println(foundUser);
+
+
+            KontaktDao kontaktDao = context.getBean("KontaktDaoImpl", KontaktDao.class);
+            Kontakt kontakt = new Kontakt(1, "999000999");
+            kontaktDao.save(kontakt);
+            System.out.println("Kontakt saved with ID= "+kontakt.getKontaktId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static int addNewOsoba(){

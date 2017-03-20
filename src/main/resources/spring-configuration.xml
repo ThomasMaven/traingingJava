@@ -10,7 +10,7 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <context:component-scan base-package="com.example.zadanie1" />
+    <context:component-scan base-package="example.com.zadanie1" />
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.postgresql.Driver" />
@@ -21,15 +21,14 @@
     <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="jcgPersistence" />
+        <property name="packagesToScan" value="example.com.zadanie1.bean"/>
         <property name="dataSource" ref="dataSource" />
-        <property name="persistenceXmlLocation" value="META-INF/persistence.xml" />
         <property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
         <property name="jpaDialect" ref="jpaDialect" />
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.hbm2ddl.auto">validate</prop>
-                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL9Dialect</prop>
             </props>
         </property>
     </bean>

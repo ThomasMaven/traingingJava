@@ -5,12 +5,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.persistence.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import javax.persistence.*;
 
 /**
  * Created by ttomaka on 15.03.2017.
@@ -20,7 +20,7 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int userId;
 
@@ -30,6 +30,16 @@ public class User {
     private String userLastname;
 
 
+    public User() {}
+
+    public User(String username, String surname) {
+        this.userFirstname = username;
+        this.userLastname = surname;
+    }
+
+    public int getUserId() {
+        return this.userId;
+    }
 
     private void setUserId(int userId) {
         this.userId = userId;
@@ -51,6 +61,10 @@ public class User {
         this.userLastname = userLastname;
     }
 
+    @Override
+    public String toString() {
+        return "User " + userId + "(Firstname: " + userFirstname + " Lastname: " + userLastname + ")";
+    }
     public String getUserContacts(Integer userId) {
 
         try (Connection connection = new Database().getDBConnection();
