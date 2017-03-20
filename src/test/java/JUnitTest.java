@@ -2,6 +2,9 @@
  * Created by ttomaka on 15.03.2017.
  */
 
+import example.com.zadanie1.bean.Database;
+import example.com.zadanie1.bean.Kontakt;
+import example.com.zadanie1.bean.User;
 import junit.framework.TestCase;
 
 import java.util.List;
