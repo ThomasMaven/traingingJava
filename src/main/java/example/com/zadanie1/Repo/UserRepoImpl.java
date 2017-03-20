@@ -44,7 +44,8 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List<User> findByImie(String imie) {
-        TypedQuery<User> query = entityManager.createQuery("Select o.id from User o where o.userFirstname = :firstname", User.class);
+        TypedQuery<User> query = entityManager.createQuery("Select o from User o " +
+                "where o.userFirstname = :firstname", User.class);
         query.setParameter("firstname", imie);
         return query.getResultList();
     }
