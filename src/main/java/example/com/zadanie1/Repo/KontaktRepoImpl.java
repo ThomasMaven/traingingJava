@@ -12,7 +12,7 @@ import java.sql.SQLException;
 /**
  * Created by ttomaka on 20.03.2017.
  */
-@Repository("KontaktRepoImpl")
+@Repository
 @Transactional(propagation = Propagation.REQUIRED)
 public class KontaktRepoImpl implements KontaktRepo {
 
@@ -20,22 +20,15 @@ public class KontaktRepoImpl implements KontaktRepo {
     private EntityManager entityManager;
 
     @Override
-    public void save(Kontakt kontakt) throws SQLException {
+    public void save(Kontakt kontakt) {
         entityManager.persist(kontakt);
     }
 
     @Override
-    public Kontakt findByPrimaryKey(int id) throws SQLException {
+    public Kontakt findByPrimaryKey(int id) {
         Kontakt kontakt = entityManager.find(Kontakt.class, id);
         return kontakt;
     }
 
-
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 }
+
