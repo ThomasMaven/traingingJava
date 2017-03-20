@@ -1,5 +1,6 @@
 package example.com.zadanie1;
 
+import example.com.zadanie1.Repo.UserService;
 import example.com.zadanie1.bean.Kontakt;
 import example.com.zadanie1.bean.User;
 import example.com.zadanie1.Repo.KontaktRepo;
@@ -22,9 +23,8 @@ public class App {
 //        System.out.println(User.displayUserContacts(userId));
 
 
-        try {
             ApplicationContext context = new ClassPathXmlApplicationContext("spring-configuration.xml");
-            UserRepo userRepo = context.getBean("UserRepoImpl", UserRepo.class);
+            UserRepo userRepo = context.getBean(UserRepo.class);
             User user = new User("Gal", "Anonim");
 
             //Save user to DB
@@ -40,16 +40,15 @@ public class App {
             List<User> foundUsers3 = userRepo.findByImieAndNazwisko("Tomasz", "Tomaka");
 
 
-            KontaktRepo kontaktRepo = context.getBean("KontaktRepoImpl", KontaktRepo.class);
+            KontaktRepo kontaktRepo = context.getBean( KontaktRepo.class);
             Kontakt kontakt = new Kontakt(1, "999000999");
             kontaktRepo.save(kontakt);
             System.out.println("Kontakt saved with ID= "+kontakt.getKontaktId());
 
 
+            UserService bean = context.getBean(UserService.class);
+            bean.test();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
     }
 

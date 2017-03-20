@@ -8,17 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by ttomaka on 17.03.2017.
  */
-@Repository("UserRepoImpl")
+@Repository
 @Transactional(propagation = Propagation.REQUIRED)
 public class UserRepoImpl implements UserRepo {
+
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Override
     public void save(User user) {
@@ -33,61 +35,25 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public List<User> findByImieAndNazwisko(String imie, String nazwisko) {
-        List<User> userList = new ArrayList<User>();
-
-        Query query = entityManager.createQuery("Select o.id from User o where o.userFirstname = :firstname " +
-                "and o.userLastname = :lastname" );
+        TypedQuery<User> query = entityManager.createQuery("Select o from User o where o.userFirstname = :firstname " +
+                "and o.userLastname = :lastname", User.class);
         query.setParameter("firstname", imie);
         query.setParameter("lastname", nazwisko);
-        List<Integer> idList = query.getResultList();
-
-        for(Integer userId : idList) {
-            User tmpUser = findByPrimaryKey(userId);
-            if(tmpUser != null) {
-                userList.add(tmpUser);
-            }
-        }
-        return userList;    }
+        return query.getResultList();
+    }
 
     @Override
     public List<User> findByImie(String imie) {
-        List<User> userList = new ArrayList<User>();
-
-        Query query = entityManager.createQuery("Select o.id from User o where o.userFirstname = :firstname" );
+        TypedQuery<User> query = entityManager.createQuery("Select o.id from User o where o.userFirstname = :firstname", User.class);
         query.setParameter("firstname", imie);
-        List<Integer> idList = query.getResultList();
-
-        for(Integer userId : idList) {
-            User tmpUser = findByPrimaryKey(userId);
-            if(tmpUser != null) {
-                userList.add(tmpUser);
-            }
-        }
-        return userList;
+        return query.getResultList();
     }
+
     @Override
     public List<User> findByNazwisko(String nazwisko) {
-        List<User> userList = new ArrayList<User>();
-
-        Query query = entityManager.createQuery("Select o.id from User o where o.userLastname = :lastname" );
+        Query query = entityManager.createQuery("Select o.id from User o where o.userLastname = :lastname");
         query.setParameter("lastname", nazwisko);
-        List<Integer> idList = query.getResultList();
-
-        for(Integer userId : idList) {
-            User tmpUser = findByPrimaryKey(userId);
-            if(tmpUser != null) {
-                userList.add(tmpUser);
-            }
-        }
-        return userList;
+        return query.getResultList();
     }
 
-
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 }
