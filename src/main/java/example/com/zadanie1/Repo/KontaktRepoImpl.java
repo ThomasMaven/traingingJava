@@ -1,7 +1,6 @@
-package example.com.zadanie1.impl;
+package example.com.zadanie1.Repo;
 
 import example.com.zadanie1.bean.Kontakt;
-import example.com.zadanie1.dao.KontaktDao;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +12,9 @@ import java.sql.SQLException;
 /**
  * Created by ttomaka on 20.03.2017.
  */
-@Repository("KontaktDaoImpl")
+@Repository("KontaktRepoImpl")
 @Transactional(propagation = Propagation.REQUIRED)
-public class KontaktDaoImpl implements KontaktDao {
+public class KontaktRepoImpl implements KontaktRepo {
 
     @PersistenceContext
     private EntityManager entityManager;

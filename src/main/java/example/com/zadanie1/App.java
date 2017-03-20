@@ -2,14 +2,14 @@ package example.com.zadanie1;
 
 import example.com.zadanie1.bean.Kontakt;
 import example.com.zadanie1.bean.User;
-import example.com.zadanie1.dao.KontaktDao;
-import example.com.zadanie1.dao.UserDao;
+import example.com.zadanie1.Repo.KontaktRepo;
+import example.com.zadanie1.Repo.UserRepo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * Created by ttomaka on 15.03.2017.
@@ -24,22 +24,29 @@ public class App {
 
         try {
             ApplicationContext context = new ClassPathXmlApplicationContext("spring-configuration.xml");
-            UserDao userDao = context.getBean("UserDaoImpl", UserDao.class);
+            UserRepo userRepo = context.getBean("UserRepoImpl", UserRepo.class);
             User user = new User("Gal", "Anonim");
 
             //Save user to DB
-            userDao.save(user);
+            userRepo.save(user);
             System.out.println("User saved with ID= " + user.getUserId());
 
             //find user
-            User foundUser = userDao.findByPrimaryKey(101);
+            User foundUser = userRepo.findByPrimaryKey(101);
             System.out.println(foundUser);
 
+            List<User> foundUsers = userRepo.findByImie("Tomasz");
+            List<User> foundUsers2 = userRepo.findByNazwisko("Tomaka");
+            List<User> foundUsers3 = userRepo.findByImieAndNazwisko("Tomasz", "Tomaka");
 
-            KontaktDao kontaktDao = context.getBean("KontaktDaoImpl", KontaktDao.class);
+
+            KontaktRepo kontaktRepo = context.getBean("KontaktRepoImpl", KontaktRepo.class);
             Kontakt kontakt = new Kontakt(1, "999000999");
-            kontaktDao.save(kontakt);
+            kontaktRepo.save(kontakt);
             System.out.println("Kontakt saved with ID= "+kontakt.getKontaktId());
+
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
